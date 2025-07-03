@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The DevHub - Master Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Resets & Variables */
+        :root {
+            --bg-light: #f4f7f6;
+            --text-light: #333;
+            --card-bg-light: #ffffff;
+            --card-shadow-light: rgba(0, 0, 0, 0.08);
+
+            --bg-dark: #2c3e50; /* Dark blue-grey */
+            --text-dark: #ecf0f1; /* Light grey */
+            --card-bg-dark: #34495e; /* Slightly darker blue-grey */
+            --card-shadow-dark: rgba(0, 0, 0, 0.4);
+
+            --primary-color: #3498db; /* Blue */
+            --accent-color: #e74c3c; /* Red */
+            --border-radius: 8px;
+            --transition-speed: 0.3s ease-in-out;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* Container for centering content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: var(--card-bg-light);
+            box-shadow: 0 2px 10px var(--card-shadow-light);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .dark-mode .navbar {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 2px 10px var(--card-shadow-dark);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Theme Switch Toggle */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch-wrapper em {
+            margin-left: 10px;
+            font-size: 0.9em;
+            color: var(--text-light);
+            transition: color var(--transition-speed);
+        }
+
+        .dark-mode .theme-switch-wrapper em {
+            color: var(--text-dark);
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 45px; /* Adjust width/height for desired size */
+            height: 25px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; /* Adjust size to fit inside slider */
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px); /* Adjust based on width */
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding-bottom: 50px;
+        }
+
+        /* Project Card Styling */
+        .project-card {
+            background-color: var(--card-bg-light);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px var(--card-shadow-light);
+            padding: 25px;
+            text-align: center;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed), background-color var(--transition-speed);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Pushes button to bottom */
+        }
+
+        .dark-mode .project-card {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 4px 15px var(--card-shadow-dark);
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px var(--card-shadow-light); /* More pronounced shadow on hover */
+        }
+
+        .dark-mode .project-card:hover {
+            box-shadow: 0 8gpx 25px var(--card-shadow-dark);
+        }
+
+        .project-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .dark-mode .project-card h3 {
+            color: var(--primary-color); /* Keep primary color consistent */
+        }
+
+        .project-card p {
+            color: var(--text-light);
+            font-size: 0.95em;
+            flex-grow: 1; /* Allows description to take up available space */
+            transition: color var(--transition-speed);
+        }
+
+        .dark-mode .project-card p {
+            color: var(--text-dark);
+        }
+
+        .project-card .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background-color var(--transition-speed), transform 0.2s ease;
+        }
+
+        .project-card .btn:hover {
+            background-color: #2980b9; /* Slightly darker primary on hover */
+            transform: translateY(-2px);
+        }
+
+        /* Footer Styling */
+        .footer {
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+            box-shadow: 0 -2px 10px var(--card-shadow-light);
+            transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .dark-mode .footer {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            box-shadow: 0 -2px 10px var(--card-shadow-dark);
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                margin-bottom: 10px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr; /* Stack cards on small screens */
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .project-card {
+                padding: 20px;
+            }
+
+            .project-card h3 {
+                font-size: 1.3em;
+            }
+
+            .project-card .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <h1 class="logo">The DevHub</h1>
+            <nav>
+                </nav>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <em>Dark Mode</em>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-grid container">
+        </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Gufaran. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dashboardGrid = document.querySelector('.dashboard-grid');
+            const themeToggle = document.getElementById('checkbox');
+
+            // Array of your websites
+            const websites = [
+                {
+                    name: "Quran Explore",
+                    url: "https://gquranexplore.pages.dev/",
+                    description: "An intuitive platform for exploring the Quran, offering translations, tafsir, and recitation."
+                },
+                {
+                    name: "Developers Compass",
+                    url: "https://gdeveloperscompass.pages.dev/",
+                    description: "A comprehensive guide and resource hub for developers, featuring tutorials, tools, and best practices."
+                },
+                {
+                    name: "Code Converter",
+                    url: "https://gcodeconverter.pages.dev/",
+                    description: "Convert code snippets between different programming languages effortlessly."
+                },
+                {
+                    name: "Utility Hub",
+                    url: "https://gutilityhub.pages.dev/",
+                    description: "A collection of online utilities for everyday tasks, from unit conversions to text manipulation."
+                },
+                {
+                    name: "Hadith Collection",
+                    url: "https://ghadithcollection.pages.dev/",
+                    description: "Explore a curated collection of Hadith, with search and categorization features."
+                },
+                {
+                    name: "AI Resume Builder",
+                    url: "https://gairesumebuilder.pages.dev/",
+                    description: "Generate professional resumes with the power of AI, tailored to your career goals."
+                },
+                {
+                    name: "Nyaya Darpan",
+                    url: "https://gnyayadarpan.pages.dev",
+                    description: "A legal knowledge base providing insights and information on various legal topics."
+                },
+                {
+                    name: "India Geography Website",
+                    url: "https://indiageographywebsite.pages.dev/",
+                    description: "Discover the diverse geography of India with interactive maps and detailed information."
+                },
+                {
+                    name: "Text to Image Generate (Flux 1 Dev)",
+                    url: "https://texttoimagegenerate-flux-1-dev.pages.dev/",
+                    description: "A tool to transform text descriptions into captivating images using advanced AI models."
+                },
+                {
+                    name: "Gufaran Portfolio",
+                    url: "https://gufaranportfolio.pages.dev/",
+                    description: "My personal portfolio showcasing projects, skills, and professional experience."
+                }
+            ];
+
+            // Function to create a project card
+            function createProjectCard(website) {
+                const card = document.createElement('div');
+                card.classList.add('project-card');
+
+                card.innerHTML = `
+                    <h3>${website.name}</h3>
+                    <p>${website.description}</p>
+                    <a href="${website.url}" target="_blank" class="btn">Visit Website <i class="fas fa-external-link-alt"></i></a>
+                `;
+                return card;
+            }
+
+            // Populate the dashboard with cards
+            websites.forEach(website => {
+                dashboardGrid.appendChild(createProjectCard(website));
+            });
+
+            // Dark Mode Toggle Logic
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                document.body.classList.add(currentTheme);
+                if (currentTheme === 'dark-mode') {
+                    themeToggle.checked = true;
+                }
+            }
+
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light-mode'); // Or remove item for default light
+                }
+            });
+        });
+    </script>
+</body>
+</html>
