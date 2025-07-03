@@ -1,756 +1,413 @@
 <!DOCTYPE html>
-<html lang="hi">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nyaya Darpan - Indian Law Search</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>The DevHub - Master Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* General Resets & Variables */
+        :root {
+            --bg-light: #f4f7f6;
+            --text-light: #333;
+            --card-bg-light: #ffffff;
+            --card-shadow-light: rgba(0, 0, 0, 0.08);
+
+            --bg-dark: #2c3e50; /* Dark blue-grey */
+            --text-dark: #ecf0f1; /* Light grey */
+            --card-bg-dark: #34495e; /* Slightly darker blue-grey */
+            --card-shadow-dark: rgba(0, 0, 0, 0.4);
+
+            --primary-color: #3498db; /* Blue */
+            --accent-color: #e74c3c; /* Red */
+            --border-radius: 8px;
+            --transition-speed: 0.3s ease-in-out;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            /* Light gray background */
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
 
-        /* Custom styles for the Indian Judiciary theme */
-        .header-bg {
-            background: linear-gradient(to right, #0a1128, #1a2c54);
-            /* Deep blue gradient */
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
         }
 
-        .search-btn {
-            background-color: #c08400;
-            /* Gold-like color */
-            transition: background-color 0.3s ease;
+        /* Container for centering content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .search-btn:hover {
-            background-color: #a16207;
-            /* Darker gold on hover */
+        /* Navbar Styling */
+        .navbar {
+            background-color: var(--card-bg-light);
+            box-shadow: 0 2px 10px var(--card-shadow-light);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
         }
 
-        .result-card {
-            border-left: 4px solid #c08400;
-            /* Gold accent on result cards */
+        .dark-mode .navbar {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 2px 10px var(--card-shadow-dark);
         }
 
-        .footer-bg {
-            background-color: #0a1128;
-            /* Deep blue for footer */
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.7);
+        .logo {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--primary-color);
         }
 
-        .modal-content {
-            background-color: #ffffff;
-            border-radius: 1rem;
-            /* Rounded corners for modal */
-        }
-
-        .qr-code-placeholder {
-            width: 150px;
-            height: 150px;
-            background-color: #e2e8f0;
-            /* Light gray for QR placeholder */
+        /* Theme Switch Toggle */
+        .theme-switch-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            /* text-sm */
-            color: #4a5568;
-            /* gray-700 */
-            border-radius: 0.5rem;
         }
 
-        /* Hide scrollbar for webkit browsers */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-            /* make scrollbar transparent */
+        .theme-switch-wrapper em {
+            margin-left: 10px;
+            font-size: 0.9em;
+            color: var(--text-light);
+            transition: color var(--transition-speed);
         }
 
-        /* Page sections */
-        .page-section {
-            display: none;
-            /* Hidden by default */
+        .dark-mode .theme-switch-wrapper em {
+            color: var(--text-dark);
         }
 
-        .page-section.active {
-            display: block;
-            /* Shown when active */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 45px; /* Adjust width/height for desired size */
+            height: 25px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; /* Adjust size to fit inside slider */
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px); /* Adjust based on width */
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding-bottom: 50px;
+        }
+
+        /* Project Card Styling */
+        .project-card {
+            background-color: var(--card-bg-light);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px var(--card-shadow-light);
+            padding: 25px;
+            text-align: center;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed), background-color var(--transition-speed);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Pushes button to bottom */
+        }
+
+        .dark-mode .project-card {
+            background-color: var(--card-bg-dark);
+            box-shadow: 0 4px 15px var(--card-shadow-dark);
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px var(--card-shadow-light); /* More pronounced shadow on hover */
+        }
+
+        .dark-mode .project-card:hover {
+            box-shadow: 0 8gpx 25px var(--card-shadow-dark);
+        }
+
+        .project-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .dark-mode .project-card h3 {
+            color: var(--primary-color); /* Keep primary color consistent */
+        }
+
+        .project-card p {
+            color: var(--text-light);
+            font-size: 0.95em;
+            flex-grow: 1; /* Allows description to take up available space */
+            transition: color var(--transition-speed);
+        }
+
+        .dark-mode .project-card p {
+            color: var(--text-dark);
+        }
+
+        .project-card .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background-color var(--transition-speed), transform 0.2s ease;
+        }
+
+        .project-card .btn:hover {
+            background-color: #2980b9; /* Slightly darker primary on hover */
+            transform: translateY(-2px);
+        }
+
+        /* Footer Styling */
+        .footer {
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+            box-shadow: 0 -2px 10px var(--card-shadow-light);
+            transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .dark-mode .footer {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            box-shadow: 0 -2px 10px var(--card-shadow-dark);
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                margin-bottom: 10px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr; /* Stack cards on small screens */
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .project-card {
+                padding: 20px;
+            }
+
+            .project-card h3 {
+                font-size: 1.3em;
+            }
+
+            .project-card .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
-
-<body class="flex flex-col min-h-screen">
-    <amp-auto-ads type="adsense"
-        data-ad-client="ca-pub-4261347534436263">
-</amp-auto-ads>
-    <header class="header-bg text-white py-4 shadow-lg">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
-            <h1 class="text-3xl font-bold mb-2 md:mb-0" id="siteTitle">न्याय दर्पण</h1>
-            <nav class="flex items-center space-x-4">
-                <ul class="flex space-x-4">
-                    <li><a href="#" class="hover:text-amber-400 transition-colors" id="navHome"
-                            data-target="homeSection">होम</a></li>
-                    <li><a href="#" class="hover:text-amber-400 transition-colors" id="navAbout"
-                            data-target="aboutSection">हमारे बारे में</a></li>
-                    <li><a href="#" class="hover:text-amber-400 transition-colors" id="navContact"
-                            data-target="contactSection">संपर्क करें</a></li>
-                </ul>
-                <select id="languageSelector"
-                    class="bg-white text-gray-800 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <option value="en">English</option>
-                    <option value="hi">हिंदी</option>
-                    <option value="mr">मराठी</option>
-                    <option value="te">తెలుగు</option>
-                    <option value="ta">தமிழ்</option>
-                    <option value="kn">ಕನ್ನಡ</option>
-                    <option value="bn">বাংলা</option>
-                    <option value="pa">ਪੰਜਾਬੀ</option>
-                    <option value="ur">اردو</option>
-                </select>
-            </nav>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <h1 class="logo">The DevHub</h1>
+            <nav>
+                </nav>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <em>Dark Mode</em>
+            </div>
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-8">
-        <section id="homeSection" class="page-section active">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-extrabold text-gray-800 mb-4" id="mainHeading">भारतीय कानूनों को आसानी से खोजें
-                </h2>
-                <p class="text-lg text-gray-600" id="subHeading">भारत के विशाल कानूनी परिदृश्य के लिए आपकी मार्गदर्शिका।
-                </p>
-            </div>
+    <main class="dashboard-grid container">
+        </main>
 
-            <div class="bg-white p-6 rounded-xl shadow-lg mb-8 max-w-2xl mx-auto">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="text" id="lawQuery" placeholder="उदाहरण: 'भारत में तलाक कानून', 'साइबर अपराध दंड'"
-                        class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <button id="searchButton"
-                        class="search-btn text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        <span id="searchBtnText">कानून खोजें</span>
-                    </button>
-                </div>
-                <div id="errorMessage" class="text-red-600 mt-4 text-center hidden"></div>
-            </div>
-
-            <div id="loadingIndicator" class="hidden text-center text-gray-700 text-lg mt-8">
-                <div
-                    class="animate-spin inline-block w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full">
-                </div>
-                <p class="mt-2" id="loadingText">प्रासंगिक कानूनों की खोज हो रही है...</p>
-            </div>
-
-            <section id="searchResults" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            </section>
-
-            <div id="noResultsMessage"
-                class="hidden text-center text-gray-600 text-lg mt-8 p-4 bg-white rounded-xl shadow-md max-w-xl mx-auto">
-                <p id="noResultsText">आपकी क्वेरी के लिए कोई परिणाम नहीं मिला। कृपया एक अलग खोज शब्द का प्रयास करें।</p>
-            </div>
-        </section>
-
-        <section id="aboutSection" class="page-section bg-white p-8 rounded-xl shadow-lg max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center" id="aboutUsTitle">हमारे बारे में</h2>
-            <p class="text-gray-700 leading-relaxed mb-4" id="aboutUsContent1">
-                न्याय दर्पण एक अभिनव मंच है जिसे वकीलों और आम जनता दोनों को भारतीय कानूनों को आसानी से खोजने और समझने
-                में मदद करने के लिए डिज़ाइन किया गया है। हमारा लक्ष्य कानूनी जानकारी को सुलभ बनाना है, जिससे हर कोई अपने
-                अधिकारों और जिम्मेदारियों को समझ सके।
-            </p>
-            <p class="text-gray-700 leading-relaxed" id="aboutUsContent2">
-                हमारा मंच कृत्रिम बुद्धिमत्ता का लाभ उठाता है ताकि उपयोगकर्ता की क्वेरी के आधार पर प्रासंगिक कानूनी
-                प्रावधानों और अवधारणाओं का त्वरित और सटीक सारांश प्रदान किया जा सके। न्याय दर्पण के साथ, कानूनी अनुसंधान
-                पहले से कहीं अधिक सरल और कुशल हो गया है।
-            </p>
-        </section>
-
-        <section id="contactSection" class="page-section bg-white p-8 rounded-xl shadow-lg max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center" id="contactUsTitle">संपर्क करें</h2>
-            <p class="text-gray-700 leading-relaxed mb-4" id="contactUsContent">
-                यदि आपके कोई प्रश्न, प्रतिक्रिया या सुझाव हैं, तो कृपया हमसे संपर्क करने में संकोच न करें। हम आपकी
-                सहायता करने के लिए यहां हैं।
-            </p>
-            <div class="text-center">
-                <p class="text-lg font-semibold text-gray-800 mb-2" id="contactEmailLabel">ईमेल:</p>
-                <a href="mailto:gufaranmujawar23@gmail.com"
-                    class="text-amber-600 hover:underline text-lg">gufaranmujawar23@gmail.com</a>
-            </div>
-        </section>
-
-    </main>
-
-    <div id="donationModal" class="fixed inset-0 flex items-center justify-center z-50 hidden modal-overlay">
-        <div
-            class="modal-content p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all scale-95 opacity-0 duration-300 ease-out">
-            <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center" id="modalTitle">न्याय दर्पण का समर्थन करें!
-            </h3>
-            <p class="text-gray-700 mb-6 text-center" id="modalMessage">
-                न्याय दर्पण का उपयोग करने के लिए धन्यवाद! आपकी सफल खोज हमें बढ़ने में मदद करती है।
-                इस प्लेटफॉर्म को बनाए रखने और बेहतर बनाने में हमारी मदद करने के लिए एक छोटा सा दान करें।
-            </p>
-            <div class="flex flex-col items-center mb-6">
-                <div class="qr-code-placeholder mb-4">
-                    <img src="./qr.PNG" alt="Donation QR Code">
-                </div>
-                <p class="text-sm text-gray-600" id="upiScanText">UPI/भुगतान ऐप के माध्यम से दान करने के लिए स्कैन करें
-                </p>
-                <p class="text-sm text-gray-600 mt-2" id="upiIdText">या UPI ID: <span
-                        class="font-semibold text-gray-800">7719019082@ybl</span></p>
-            </div>
-            <div class="flex justify-center">
-                <button id="closeModal"
-                    class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
-                    <span id="closeModalBtnText">बंद करें</span>
-                </button>
-            </div>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Gufaran. All rights reserved.</p>
         </div>
-    </div>
-            <!-- Google AdSense Responsive Ad Unit -->
-    <div class="container mx-auto my-4 px-4">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4261347534436263"
-            data-ad-slot="7360346153" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-
-    <footer class="footer-bg text-white py-6 mt-8">
-        <div
-            class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-center md:text-left">
-            <p class="text-sm mb-2 md:mb-0" id="copyrightText">&copy; <span id="currentYear"></span> न्याय दर्पण।
-                सर्वाधिकार सुरक्षित।</p>
-            <p class="text-sm mb-2 md:mb-0" id="designedByText">गुफरान मुजावर द्वारा डिज़ाइन किया गया</p>
-            <button id="footerDonationButton"
-                class="search-btn text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-colors">
-                <span id="supportUsBtnText">हमारा समर्थन करें</span>
-            </button>
-        </div>
-
     </footer>
 
-    <script type="module">
-        // Set current year in footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dashboardGrid = document.querySelector('.dashboard-grid');
+            const themeToggle = document.getElementById('checkbox');
 
-        const searchButton = document.getElementById('searchButton');
-        const lawQueryInput = document.getElementById('lawQuery');
-        const searchResultsDiv = document.getElementById('searchResults');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const errorMessageDiv = document.getElementById('errorMessage');
-        const noResultsMessage = document.getElementById('noResultsMessage');
-        const donationModal = document.getElementById('donationModal');
-        const closeModalButton = document.getElementById('closeModal');
-        const footerDonationButton = document.getElementById('footerDonationButton');
-        const languageSelector = document.getElementById('languageSelector');
-
-        const navHome = document.getElementById('navHome');
-        const navAbout = document.getElementById('navAbout');
-        const navContact = document.getElementById('navContact');
-
-        const homeSection = document.getElementById('homeSection');
-        const aboutSection = document.getElementById('aboutSection');
-        const contactSection = document.getElementById('contactSection');
-
-        // --- Translation Data ---
-        const translations = {
-            en: {
-                siteTitle: 'Nyaya Darpan',
-                navHome: 'Home',
-                navAbout: 'About Us',
-                navContact: 'Contact',
-                mainHeading: 'Find Indian Laws with Ease',
-                subHeading: 'Your guide to the vast legal landscape of India.',
-                lawQueryPlaceholder: "e.g., 'divorce law in India', 'cybercrime penalties'",
-                searchBtnText: 'Search Law',
-                errorMessage: 'Please enter a law query.',
-                apiError: 'Could not retrieve legal information. Please try again later.',
-                searchError: 'An error occurred while searching. Please try again.',
-                loadingText: 'Searching for relevant laws...',
-                noResultsText: 'No results found for your query. Please try a different search term.',
-                modalTitle: 'Support Nyaya Darpan!',
-                modalMessage: 'Thank you for using Nyaya Darpan! Your successful search helps us grow. Consider a small donation to help us maintain and improve this platform.',
-                upiScanText: 'Scan to donate via UPI/Payment App',
-                upiIdText: 'Or UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'Close',
-                copyrightText: '&copy; <span id="currentYear"></span> Nyaya Darpan. All rights reserved.',
-                designedByText: 'Designed by Gufaran Mujawar',
-                supportUsBtnText: 'Support Us',
-                aboutUsTitle: 'About Us',
-                aboutUsContent1: 'Nyaya Darpan is an innovative platform designed to help both lawyers and the general public easily find and understand Indian laws. Our goal is to make legal information accessible, enabling everyone to understand their rights and responsibilities.',
-                aboutUsContent2: 'Our platform leverages artificial intelligence to provide quick and accurate summaries of relevant legal provisions and concepts based on the user\'s query. With Nyaya Darpan, legal research has become simpler and more efficient than ever before.',
-                contactUsTitle: 'Contact Us',
-                contactUsContent: 'If you have any questions, feedback, or suggestions, please do not hesitate to contact us. We are here to assist you.',
-                contactEmailLabel: 'Email:'
-            },
-            hi: {
-                siteTitle: 'न्याय दर्पण',
-                navHome: 'होम',
-                navAbout: 'हमारे बारे में',
-                navContact: 'संपर्क करें',
-                mainHeading: 'भारतीय कानूनों को आसानी से खोजें',
-                subHeading: 'भारत के विशाल कानूनी परिदृश्य के लिए आपकी मार्गदर्शिका।',
-                lawQueryPlaceholder: "उदाहरण: 'भारत में तलाक कानून', 'साइबर अपराध दंड'",
-                searchBtnText: 'कानून खोजें',
-                errorMessage: 'कृपया एक कानून क्वेरी दर्ज करें।',
-                apiError: 'कानूनी जानकारी प्राप्त नहीं हो सकी। कृपया बाद में पुनः प्रयास करें।',
-                searchError: 'खोज करते समय एक त्रुटि हुई। कृपया पुनः प्रयास करें।',
-                loadingText: 'प्रासंगिक कानूनों की खोज हो रही है...',
-                noResultsText: 'आपकी क्वेरी के लिए कोई परिणाम नहीं मिला। कृपया एक अलग खोज शब्द का प्रयास करें।',
-                modalTitle: 'न्याय दर्पण का समर्थन करें!',
-                modalMessage: 'न्याय दर्पण का उपयोग करने के लिए धन्यवाद! आपकी सफल खोज हमें बढ़ने में मदद करती है। इस प्लेटफॉर्म को बनाए रखने और बेहतर बनाने में हमारी मदद करने के लिए एक छोटा सा दान करें।',
-                upiScanText: 'UPI/भुगतान ऐप के माध्यम से दान करने के लिए स्कैन करें',
-                upiIdText: 'या UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'बंद करें',
-                copyrightText: '&copy; <span id="currentYear"></span> न्याय दर्पण। सर्वाधिकार सुरक्षित।',
-                designedByText: 'गुफरान मुजावर द्वारा डिज़ाइन किया गया',
-                supportUsBtnText: 'हमारा समर्थन करें',
-                aboutUsTitle: 'हमारे बारे में',
-                aboutUsContent1: 'न्याय दर्पण एक अभिनव मंच है जिसे वकीलों और आम जनता दोनों को भारतीय कानूनों को आसानी से खोजने और समझने में मदद करने के लिए डिज़ाइन किया गया है। हमारा लक्ष्य कानूनी जानकारी को सुलभ बनाना है, जिससे हर कोई अपने अधिकारों और जिम्मेदारियों को समझ सके।',
-                aboutUsContent2: 'हमारा मंच कृत्रिम बुद्धिमत्ता का लाभ उठाता है ताकि उपयोगकर्ता की क्वेरी के आधार पर प्रासंगिक कानूनी प्रावधानों और अवधारणाओं का त्वरित और सटीक सारांश प्रदान किया जा सके। न्याय दर्पण के साथ, कानूनी अनुसंधान पहले से कहीं अधिक सरल और कुशल हो गया है।',
-                contactUsTitle: 'संपर्क करें',
-                contactUsContent: 'यदि आपके कोई प्रश्न, प्रतिक्रिया या सुझाव हैं, तो कृपया हमसे संपर्क करने में संकोच न करें। हम आपकी सहायता करने के लिए यहां हैं।',
-                contactEmailLabel: 'ईमेल:'
-            },
-            mr: {
-                siteTitle: 'न्याय दर्पण',
-                navHome: 'मुख्यपृष्ठ',
-                navAbout: 'आमच्याबद्दल',
-                navContact: 'संपर्क साधा',
-                mainHeading: 'भारतीय कायदे सहज शोधा',
-                subHeading: 'भारताच्या विशाल कायदेशीर भूभागासाठी आपले मार्गदर्शक.',
-                lawQueryPlaceholder: "उदा. 'भारतातील घटस्फोट कायदा', 'सायबर गुन्हेगारी दंड'",
-                searchBtnText: 'कायदा शोधा',
-                errorMessage: 'कृपया कायद्याची क्वेरी प्रविष्ट करा.',
-                apiError: 'कायदेशीर माहिती मिळवता आली नाही. कृपया नंतर पुन्हा प्रयत्न करा.',
-                searchError: 'शोधताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
-                loadingText: 'संबंधित कायद्यांचा शोध सुरू आहे...',
-                noResultsText: 'आपल्या क्वेरीसाठी कोणतेही परिणाम आढळले नाहीत. कृपया वेगळा शोध शब्द वापरून पहा.',
-                modalTitle: 'न्याय दर्पणला समर्थन द्या!',
-                modalMessage: 'न्याय दर्पण वापरल्याबद्दल धन्यवाद! आपल्या यशस्वी शोधामुळे आम्हाला वाढण्यास मदत होते. हे व्यासपीठ राखण्यासाठी आणि सुधारण्यासाठी आम्हाला मदत करण्यासाठी एक लहान देणगी विचारात घ्या.',
-                upiScanText: 'UPI/पेमेंट ॲपद्वारे दान करण्यासाठी स्कॅन करा',
-                upiIdText: 'किंवा UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'बंद करा',
-                copyrightText: '&copy; <span id="currentYear"></span> न्याय दर्पण. सर्व हक्क राखीव.',
-                designedByText: 'गुफरान मुजावर यांनी डिझाइन केले',
-                supportUsBtnText: 'आम्हाला समर्थन द्या',
-                aboutUsTitle: 'आमच्याबद्दल',
-                aboutUsContent1: 'न्याय दर्पण हे वकील आणि सामान्य नागरिक दोघांनाही भारतीय कायदे सहजपणे शोधण्यात आणि समजून घेण्यास मदत करण्यासाठी डिझाइन केलेले एक अभिनव व्यासपीठ आहे. कायदेशीर माहिती सहज उपलब्ध करून देणे हे आमचे ध्येय आहे, ज्यामुळे प्रत्येकाला त्यांचे हक्क आणि जबाबदाऱ्या समजून घेता येतील.',
-                aboutUsContent2: 'आमचे व्यासपीठ वापरकर्त्याच्या क्वेरीवर आधारित संबंधित कायदेशीर तरतुदी आणि संकल्पनांचा त्वरित आणि अचूक सारांश प्रदान करण्यासाठी कृत्रिम बुद्धिमत्तेचा लाभ घेते. न्याय दर्पणमुळे, कायदेशीर संशोधन पूर्वीपेक्षा सोपे आणि अधिक कार्यक्षम झाले आहे.',
-                contactUsTitle: 'संपर्क साधा',
-                contactUsContent: 'आपल्याला काही प्रश्न, अभिप्राय किंवा सूचना असल्यास, कृपया आमच्याशी संपर्क साधण्यास अजिबात संकोच करू नका. आम्ही आपल्याला मदत करण्यासाठी येथे आहोत.',
-                contactEmailLabel: 'ईमेल:'
-            },
-            te: {
-                siteTitle: 'న్యాయ దర్పణ్',
-                navHome: 'హోమ్',
-                navAbout: 'మా గురించి',
-                navContact: 'సంప్రదించండి',
-                mainHeading: 'భారతీయ చట్టాలను సులభంగా కనుగొనండి',
-                subHeading: 'భారతదేశంలోని విస్తారమైన చట్టపరమైన దృశ్యం కోసం మీ గైడ్.',
-                lawQueryPlaceholder: "ఉదా. 'భారతదేశంలో విడాకుల చట్టం', 'సైబర్ నేరాల శిక్షలు'",
-                searchBtnText: 'చట్టాన్ని శోధించండి',
-                errorMessage: 'దయచేసి చట్టపరమైన ప్రశ్నను నమోదు చేయండి.',
-                apiError: 'చట్టపరమైన సమాచారం తిరిగి పొందలేకపోయింది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.',
-                searchError: 'శోధిస్తున్నప్పుడు లోపం సంభవించింది. దయచేసి మళ్లీ ప్రయత్నించండి.',
-                loadingText: 'సంబంధిత చట్టాల కోసం శోధిస్తోంది...',
-                noResultsText: 'మీ ప్రశ్నకు ఎటువంటి ఫలితాలు కనుగొనబడలేదు. దయచేచేసి వేరే శోధన పదాన్ని ప్రయత్నించండి.',
-                modalTitle: 'న్యాయ దర్పణ్‌కు మద్దతు ఇవ్వండి!',
-                modalMessage: 'న్యాయ దర్పణ్‌ను ఉపయోగించినందుకు ధన్యవాదాలు! మీ విజయవంతమైన శోధన మాకు వృద్ధి చెందడానికి సహాయపడుతుంది. ఈ ప్లాట్‌ఫారమ్‌ను నిర్వహించడానికి మరియు మెరుగుపరచడానికి మాకు సహాయపడటానికి చిన్న విరాళాన్ని పరిగణించండి.',
-                upiScanText: 'UPI/చెల్లింపు యాప్ ద్వారా విరాళం ఇవ్వడానికి స్కాన్ చేయండి',
-                upiIdText: 'లేదా UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'మూసివేయి',
-                copyrightText: '&copy; <span id="currentYear"></span> న్యాయ దర్పణ్. అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి.',
-                designedByText: 'గుఫ్రాన్ ముజావర్ రూపొందించారు',
-                supportUsBtnText: 'మాకు మద్దతు ఇవ్వండి',
-                aboutUsTitle: 'మా గురించి',
-                aboutUsContent1: 'న్యాయ దర్పణ్ అనేది న్యాయవాదులు మరియు సాధారణ ప్రజలు ఇద్దరికీ భారతీయ చట్టాలను సులభంగా కనుగొనడానికి మరియు అర్థం చేసుకోవడానికి సహాయపడటానికి రూపొందించబడిన ఒక వినూత్న వేదిక. చట్టపరమైన సమాచారాన్ని అందుబాటులోకి తీసుకురావడం మా లక్ష్యం, తద్వారా ప్రతి ఒక్కరూ తమ హక్కులు మరియు బాధ్యతలను అర్థం చేసుకోగలరు.',
-                aboutUsContent2: 'మా వేదిక వినియోగదారు యొక్క ప్రశ్న ఆధారంగా సంబంధిత చట్టపరమైన నిబంధనలు మరియు భావనల యొక్క త్వరిత మరియు ఖచ్చితమైన సారాంశాలను అందించడానికి కృత్రిమ మేధస్సును ఉపయోగిస్తుంది. న్యాయ దర్పణ్‌తో, చట్టపరమైన పరిశోధన గతంలో కంటే సరళంగా మరియు మరింత సమర్థవంతంగా మారింది.',
-                contactUsTitle: 'సంప్రదించండి',
-                contactUsContent: 'మీకు ఏవైనా ప్రశ్నలు, అభిప్రాయాలు లేదా సూచనలు ఉంటే, దయచేసి మమ్మల్ని సంప్రదించడానికి వెనుకాడకండి. మీకు సహాయం చేయడానికి మేము ఇక్కడ ఉన్నాము.',
-                contactEmailLabel: 'ఇమెయిల్:'
-            },
-            ta: {
-                siteTitle: 'நியாய தர்பன்',
-                navHome: 'முகப்பு',
-                navAbout: 'எங்களைப் பற்றி',
-                navContact: 'தொடர்பு',
-                mainHeading: 'இந்திய சட்டங்களை எளிதாகக் கண்டறியவும்',
-                subHeading: 'இந்தியாவின் பரந்த சட்டப் பகுதிக்கு உங்கள் வழிகாட்டி.',
-                lawQueryPlaceholder: "எ.கா. 'இந்தியாவில் விவாகரத்து சட்டம்', 'சைபர் குற்ற தண்டனைகள்'",
-                searchBtnText: 'சட்டத்தைத் தேடு',
-                errorMessage: 'தயவுசெய்து ஒரு சட்டக் கேள்வியை உள்ளிடவும்.',
-                apiError: 'சட்டத் தகவலைப் பெற முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.',
-                searchError: 'தேடும் போது ஒரு பிழை ஏற்பட்டது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.',
-                loadingText: 'சம்பந்தப்பட்ட சட்டங்களைத் தேடுகிறது...',
-                noResultsText: 'உங்கள் கேள்விக்கு எந்த முடிவுகளும் இல்லை. தயவுசெய்து வேறு தேடல் சொல்லை முயற்சிக்கவும்.',
-                modalTitle: 'நியாய தர்பனை ஆதரிக்கவும்!',
-                modalMessage: 'நியாய தர்பனைப் பயன்படுத்தியதற்கு நன்றி! உங்கள் வெற்றிகரமான தேடல் எங்களுக்கு வளர உதவுகிறது. இந்த தளத்தை பராமரிக்கவும் மேம்படுத்தவும் எங்களுக்கு உதவ ஒரு சிறிய நன்கொடையைக் கருத்தில் கொள்ளுங்கள்.',
-                upiScanText: 'UPI/பணம் செலுத்தும் செயலி மூலம் நன்கொடை வழங்க ஸ்கேன் செய்யவும்',
-                upiIdText: 'அல்லது UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'மூடு',
-                copyrightText: '&copy; <span id="currentYear"></span> நியாய தர்பன். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.',
-                designedByText: 'குஃப்ரன் முஜாவர் வடிவமைத்தார்',
-                supportUsBtnText: 'எங்களை ஆதரிக்கவும்',
-                aboutUsTitle: 'எங்களைப் பற்றி',
-                aboutUsContent1: 'நியாய தர்பன் என்பது வழக்கறிஞர்கள் மற்றும் பொது மக்கள் இருவருக்கும் இந்திய சட்டங்களை எளிதாகக் கண்டறியவும் புரிந்துகொள்ளவும் உதவும் ஒரு புதுமையான தளமாகும். சட்டத் தகவலை அணுகக்கூடியதாக மாற்றுவதே எங்கள் குறிக்கோள், இதன் மூலம் அனைவரும் தங்கள் உரிமைகளையும் பொறுப்புகளையும் புரிந்துகொள்ள முடியும்.',
-                aboutUsContent2: 'எங்கள் தளம் பயனர் தேடலின் அடிப்படையில் தொடர்புடைய சட்ட விதிகள் மற்றும் கருத்துகளின் விரைவான மற்றும் துல்லியமான சுருக்கங்களை வழங்க செயற்கை நுண்ணறிவைப் பயன்படுத்துகிறது. நியாய தர்பன் மூலம், சட்ட ஆராய்ச்சி முன்பை விட எளிதாகவும் திறமையாகவும் மாறியுள்ளது.',
-                contactUsTitle: 'தொடர்பு',
-                contactUsContent: 'உங்களுக்கு ஏதேனும் கேள்விகள், கருத்துகள் அல்லது பரிந்துரைகள் இருந்தால், எங்களைத் தொடர்புகொள்ள தயங்க வேண்டாம். உங்களுக்கு உதவ நாங்கள் இங்கு இருக்கிறோம்.',
-                contactEmailLabel: 'மின்னஞ்சல்:'
-            },
-            kn: {
-                siteTitle: 'ನ್ಯಾಯ ದರ್ಪಣ್',
-                navHome: 'ಮುಖಪುಟ',
-                navAbout: 'ನಮ್ಮ ಬಗ್ಗೆ',
-                navContact: 'ಸಂಪರ್ಕಿಸಿ',
-                mainHeading: 'ಭಾರತೀಯ ಕಾನೂನುಗಳನ್ನು ಸುಲಭವಾಗಿ ಹುಡುಕಿ',
-                subHeading: 'ಭಾರತದ ವಿಶಾಲ ಕಾನೂನು ಭೂದೃಶ್ಯಕ್ಕೆ ನಿಮ್ಮ ಮಾರ್ಗದರ್ಶಿ.',
-                lawQueryPlaceholder: "ಉದಾ. 'ಭಾರತದಲ್ಲಿ ವಿಚ್ಛೇದನ ಕಾನೂನು', 'ಸೈಬರ್ ಅಪರಾಧ ದಂಡಗಳು'",
-                searchBtnText: 'ಕಾನೂನು ಹುಡುಕಿ',
-                errorMessage: 'ದಯವಿಟ್ಟು ಕಾನೂನು ಪ್ರಶ್ನೆಯನ್ನು ನಮೂದಿಸಿ.',
-                apiError: 'ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
-                searchError: 'ಹುಡುಕುವಾಗ ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
-                loadingText: 'ಸಂಬಂಧಿತ ಕಾನೂನುಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ...',
-                noResultsText: 'ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಬೇರೆ ಹುಡುಕಾಟ ಪದವನ್ನು ಪ್ರಯತ್ನಿಸಿ.',
-                modalTitle: 'ನ್ಯಾಯ ದರ್ಪಣ್‌ಗೆ ಬೆಂಬಲ ನೀಡಿ!',
-                modalMessage: 'ನ್ಯಾಯ ದರ್ಪಣ್ ಬಳಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು! ನಿಮ್ಮ ಯಶಸ್ವಿ ಹುಡುಕಾಟ ನಮಗೆ ಬೆಳೆಯಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಈ ವೇದಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಮತ್ತು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಲು ಸಣ್ಣ ದೇಣಿಗೆಯನ್ನು ಪರಿಗಣಿಸಿ.',
-                upiScanText: 'UPI/ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್ ಮೂಲಕ ದೇಣಿಗೆ ನೀಡಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ',
-                upiIdText: 'ಅಥವಾ UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'ಮುಚ್ಚಿ',
-                copyrightText: '&copy; <span id="currentYear"></span> ನ್ಯಾಯ ದರ್ಪಣ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.',
-                designedByText: 'ಗುಫ್ರಾನ್ ಮುಜಾವರ್ ವಿನ್ಯಾಸಗೊಳಿಸಿದ್ದಾರೆ',
-                supportUsBtnText: 'ನಮಗೆ ಬೆಂಬಲ ನೀಡಿ',
-                aboutUsTitle: 'ನಮ್ಮ ಬಗ್ಗೆ',
-                aboutUsContent1: 'ನ್ಯಾಯ ದರ್ಪಣ್ ವಕೀಲರು ಮತ್ತು ಸಾಮಾನ್ಯ ಜನರಿಗೆ ಭಾರತೀಯ ಕಾನೂನುಗಳನ್ನು ಸುಲಭವಾಗಿ ಹುಡುಕಲು ಮತ್ತು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಸಹಾಯ ಮಾಡಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ಒಂದು ನವೀನ ವೇದಿಕೆಯಾಗಿದೆ. ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸುವಂತೆ ಮಾಡುವುದು ನಮ್ಮ ಗುರಿಯಾಗಿದೆ, ಇದರಿಂದ ಪ್ರತಿಯೊಬ್ಬರೂ ತಮ್ಮ ಹಕ್ಕುಗಳು ಮತ್ತು ಜವಾಬ್ದಾರಿಗಳನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಬಹುದು.',
-                aboutUsContent2: 'ನಮ್ಮ ವೇದಿಕೆಯು ಬಳಕೆದಾರರ ಪ್ರಶ್ನೆಯ ಆಧಾರದ ಮೇಲೆ ಸಂಬಂಧಿತ ಕಾನೂನು ನಿಬಂಧನೆಗಳು ಮತ್ತು ಪರಿಕಲ್ಪನೆಗಳ ತ್ವರಿತ ಮತ್ತು ನಿಖರವಾದ ಸಾರಾಂಶಗಳನ್ನು ಒದಗಿಸಲು ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯನ್ನು ಬಳಸುತ್ತದೆ. ನ್ಯಾಯ ದರ್ಪಣ್‌ನೊಂದಿಗೆ, ಕಾನೂನು ಸಂಶೋಧನೆಯು ಹಿಂದೆಂದಿಗಿಂತಲೂ ಸರಳ ಮತ್ತು ಹೆಚ್ಚು ಪರಿಣಾಮಕಾರಿಯಾಗಿದೆ.',
-                contactUsTitle: 'ಸಂಪರ್ಕಿಸಿ',
-                contactUsContent: 'ನಿಮಗೆ ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳು, ಪ್ರತಿಕ್ರಿಯೆ ಅಥವಾ ಸಲಹೆಗಳಿದ್ದರೆ, ದಯವಿಟ್ಟು ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಲು ಹಿಂಜರಿಯಬೇಡಿ. ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ನಾವು ಇಲ್ಲಿದ್ದೇವೆ.',
-                contactEmailLabel: 'ಇಮೇಲ್:'
-            },
-            bn: {
-                siteTitle: 'ন্যায় দর্পণ',
-                navHome: 'হোম',
-                navAbout: 'আমাদের সম্পর্কে',
-                navContact: 'যোগাযোগ',
-                mainHeading: 'সহজে ভারতীয় আইন খুঁজুন',
-                subHeading: 'ভারতের বিশাল আইনি ল্যান্ডস্কেপের জন্য আপনার নির্দেশিকা।',
-                lawQueryPlaceholder: "যেমন: 'ভারতে বিবাহবিচ্ছেদ আইন', 'সাইবার অপরাধের শাস্তি'",
-                searchBtnText: 'আইন খুঁজুন',
-                errorMessage: 'অনুগ্রহ করে একটি আইন প্রশ্ন লিখুন।',
-                apiError: 'আইনি তথ্য পুনরুদ্ধার করা যায়নি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।',
-                searchError: 'অনুসন্ধান করার সময় একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
-                loadingText: 'প্রাসঙ্গিক আইন অনুসন্ধান করা হচ্ছে...',
-                noResultsText: 'আপনার প্রশ্নের জন্য কোনো ফলাফল পাওয়া যায়নি। অনুগ্রহ করে একটি ভিন্ন অনুসন্ধান শব্দ চেষ্টা করুন।',
-                modalTitle: 'ন্যায় দর্পণকে সমর্থন করুন!',
-                modalMessage: 'ন্যায় দর্পণ ব্যবহার করার জন্য আপনাকে ধন্যবাদ! আপনার সফল অনুসন্ধান আমাদের বাড়তে সাহায্য করে। এই প্ল্যাটফর্মটি বজায় রাখতে এবং উন্নত করতে আমাদের সাহায্য করার জন্য একটি ছোট অনুদান বিবেচনা করুন।',
-                upiScanText: 'UPI/পেমেন্ট অ্যাপের মাধ্যমে দান করতে স্ক্যান করুন',
-                upiIdText: 'অথবা UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'বন্ধ করুন',
-                copyrightText: '&copy; <span id="currentYear"></span> ন্যায় দর্পণ। সর্বস্বত্ব সংরক্ষিত।',
-                designedByText: 'গুফরান মুজাওয়ার দ্বারা ডিজাইন করা হয়েছে',
-                supportUsBtnText: 'আমাদের সমর্থন করুন',
-                aboutUsTitle: 'আমাদের সম্পর্কে',
-                aboutUsContent1: 'ন্যায় দর্পণ একটি উদ্ভাবনী প্ল্যাটফর্ম যা আইনজীবী এবং সাধারণ জনগণ উভয়কেই ভারতীয় আইনগুলি সহজে খুঁজে পেতে এবং বুঝতে সাহায্য করার জন্য ডিজাইন করা হয়েছে। আমাদের লক্ষ্য হল আইনি তথ্যকে সহজলভ্য করা, যাতে প্রত্যেকে তাদের অধিকার এবং দায়িত্বগুলি বুঝতে পারে।',
-                aboutUsContent2: 'আমাদের প্ল্যাটফর্ম ব্যবহারকারীর প্রশ্নের উপর ভিত্তি করে প্রাসঙ্গিক আইনি বিধান এবং ধারণাগুলির দ্রুত এবং সঠিক সারাংশ প্রদান করতে কৃত্রিম বুদ্ধিমত্তা ব্যবহার করে। ন্যায় দর্পণের সাথে, আইনি গবেষণা আগের চেয়ে সহজ এবং আরও কার্যকর হয়ে উঠেছে।',
-                contactUsTitle: 'যোগাযোগ',
-                contactUsContent: 'যদি আপনার কোন প্রশ্ন, প্রতিক্রিয়া বা পরামর্শ থাকে, তাহলে অনুগ্রহ করে আমাদের সাথে যোগাযোগ করতে দ্বিধা করবেন না। আমরা আপনাকে সাহায্য করার জন্য এখানে আছি।',
-                contactEmailLabel: 'ইমেইল:'
-            },
-            pa: {
-                siteTitle: 'ਨਿਆਇ ਦਰਪਨ',
-                navHome: 'ਮੁੱਖ ਪੰਨਾ',
-                navAbout: 'ਸਾਡੇ ਬਾਰੇ',
-                navContact: 'ਸੰਪਰਕ ਕਰੋ',
-                mainHeading: 'ਭਾਰਤੀ ਕਾਨੂੰਨਾਂ ਨੂੰ ਆਸਾਨੀ ਨਾਲ ਲੱਭੋ',
-                subHeading: 'ਭਾਰਤ ਦੇ ਵਿਸ਼ਾਲ ਕਾਨੂੰਨੀ ਦ੍ਰਿਸ਼ ਲਈ ਤੁਹਾਡੀ ਗਾਈਡ।',
-                lawQueryPlaceholder: "ਉਦਾਹਰਨ: 'ਭਾਰਤ ਵਿੱਚ ਤਲਾਕ ਕਾਨੂੰਨ', 'ਸਾਈਬਰ ਅਪਰਾਧ ਦੀ ਸਜ਼ਾ'",
-                searchBtnText: 'ਕਾਨੂੰਨ ਲੱਭੋ',
-                errorMessage: 'ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਕਾਨੂੰਨੀ ਸਵਾਲ ਦਰਜ ਕਰੋ।',
-                apiError: 'ਕਾਨੂੰਨੀ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
-                searchError: 'ਖੋਜ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
-                loadingText: 'ਸੰਬੰਧਿਤ ਕਾਨੂੰਨਾਂ ਦੀ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...',
-                noResultsText: 'ਤੁਹਾਡੀ ਖੋਜ ਲਈ ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੱਖਰਾ ਖੋਜ ਸ਼ਬਦ ਅਜ਼ਮਾਓ।',
-                modalTitle: 'ਨਿਆਇ ਦਰਪਨ ਦਾ ਸਮਰਥਨ ਕਰੋ!',
-                modalMessage: 'ਨਿਆਇ ਦਰਪਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ! ਤੁਹਾਡੀ ਸਫਲ ਖੋਜ ਸਾਨੂੰ ਵਧਣ ਵਿੱਚ ਮਦਦ ਕਰਦੀ ਹੈ। ਇਸ ਪਲੇਟਫਾਰਮ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਅਤੇ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਇੱਕ ਛੋਟਾ ਜਿਹਾ ਦਾਨ ਕਰੋ।',
-                upiScanText: 'UPI/ਭੁਗਤਾਨ ਐਪ ਰਾਹੀਂ ਦਾਨ ਕਰਨ ਲਈ ਸਕੈਨ ਕਰੋ',
-                upiIdText: 'ਜਾਂ UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'ਬੰਦ ਕਰੋ',
-                copyrightText: '&copy; <span id="currentYear"></span> ਨਿਆਇ ਦਰਪਨ। ਸਾਰੇ ਅਧਿਕਾਰ ਰਾਖਵੇਂ ਹਨ।',
-                designedByText: 'ਗੁਫਰਾਨ ਮੁਜਾਵਰ ਦੁਆਰਾ ਡਿਜ਼ਾਈਨ ਕੀਤਾ ਗਿਆ',
-                supportUsBtnText: 'ਸਾਡਾ ਸਮਰਥਨ ਕਰੋ',
-                aboutUsTitle: 'ਸਾਡੇ ਬਾਰੇ',
-                aboutUsContent1: 'ਨਿਆਇ ਦਰਪਨ ਇੱਕ ਨਵੀਨਤਾਕਾਰੀ ਪਲੇਟਫਾਰਮ ਹੈ ਜੋ ਵਕੀਲਾਂ ਅਤੇ ਆਮ ਲੋਕਾਂ ਦੋਵਾਂ ਨੂੰ ਭਾਰਤੀ ਕਾਨੂੰਨਾਂ ਨੂੰ ਆਸਾਨੀ ਨਾਲ ਲੱਭਣ ਅਤੇ ਸਮਝਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਤਿਆਰ ਕੀਤਾ ਗਿਆ ਹੈ। ਸਾਡਾ ਟੀਚਾ ਕਾਨੂੰਨੀ ਜਾਣਕਾਰੀ ਨੂੰ ਪਹੁੰਚਯੋਗ ਬਣਾਉਣਾ ਹੈ, ਜਿਸ ਨਾਲ ਹਰ ਕੋਈ ਆਪਣੇ ਅਧਿਕਾਰਾਂ ਅਤੇ ਜ਼ਿੰਮੇਵਾਰੀਆਂ ਨੂੰ ਸਮਝ ਸਕੇ।',
-                aboutUsContent2: 'ਸਾਡਾ ਪਲੇਟਫਾਰਮ ਉਪਭੋਗਤਾ ਦੀ ਖੋਜ ਦੇ ਆਧਾਰ ਤੇ ਸੰਬੰਧਿਤ ਕਾਨੂੰਨੀ ਪ੍ਰਬੰਧਾਂ ਅਤੇ ਧਾਰਨਾਵਾਂ ਦਾ ਤੇਜ਼ ਅਤੇ ਸਹੀ ਸਾਰਾਂਸ਼ ਪ੍ਰਦਾਨ ਕਰਨ ਲਈ ਨਕਲੀ ਬੁੱਧੀ ਦਾ ਲਾਭ ਉਠਾਉਂਦਾ ਹੈ। ਨਿਆਇ ਦਰਪਨ ਦੇ ਨਾਲ, ਕਾਨੂੰਨੀ ਖੋਜ ਪਹਿਲਾਂ ਨਾਲੋਂ ਵਧੇਰੇ ਸਰਲ ਅਤੇ ਕੁਸ਼ਲ ਹੋ ਗਈ ਹੈ।',
-                contactUsTitle: 'ਸੰਪਰਕ ਕਰੋ',
-                contactUsContent: 'ਜੇਕਰ ਤੁਹਾਡੇ ਕੋਈ ਸਵਾਲ, ਫੀਡਬੈਕ ਜਾਂ ਸੁਝਾਅ ਹਨ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਸਾਡੇ ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਵਿੱਚ ਸੰਕੋਚ ਨਾ ਕਰੋ। ਅਸੀਂ ਤੁਹਾਡੀ ਸਹਾਇਤਾ ਲਈ ਇੱਥੇ ਹਾਂ।',
-                contactEmailLabel: 'ਈਮੇਲ:'
-            },
-            ur: {
-                siteTitle: 'نیائے درپن',
-                navHome: 'ہوم',
-                navAbout: 'ہمارے بارے میں',
-                navContact: 'رابطہ کریں',
-                mainHeading: 'ہندوستانی قوانین آسانی سے تلاش کریں',
-                subHeading: 'ہندوستان کے وسیع قانونی منظرنامے کے لیے آپ کی رہنمائی۔',
-                lawQueryPlaceholder: "مثال: 'ہندوستان میں طلاق کا قانون', 'سائبر کرائم کی سزائیں'",
-                searchBtnText: 'قانون تلاش کریں',
-                errorMessage: 'براہ کرم قانونی سوال درج کریں۔',
-                apiError: 'قانونی معلومات حاصل نہیں کی جا سکیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔',
-                searchError: 'تلاش کرتے وقت ایک خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔',
-                loadingText: 'متعلقہ قوانین کی تلاش جاری ہے...',
-                noResultsText: 'آپ کی تلاش کے لیے کوئی نتیجہ نہیں ملا۔ براہ کرم ایک مختلف تلاش کی اصطلاح آزمائیں۔',
-                modalTitle: 'نیائے درپن کی حمایت کریں!',
-                modalMessage: 'نیائے درپن استعمال کرنے کا شکریہ! آپ کی کامیاب تلاش ہمیں بڑھنے میں مدد دیتی ہے۔ اس پلیٹ فارم کو برقرار رکھنے اور بہتر بنانے میں ہماری مدد کرنے کے لیے ایک چھوٹا سا عطیہ دیں۔',
-                upiScanText: 'UPI/ادائیگی ایپ کے ذریعے عطیہ کرنے کے لیے اسکین کریں',
-                upiIdText: 'یا UPI ID: 7719019082@ybl',
-                closeModalBtnText: 'بند کریں',
-                copyrightText: '&copy; <span id="currentYear"></span> نیائے درپن۔ تمام حقوق محفوظ ہیں۔',
-                designedByText: 'غفران مجاور نے ڈیزائن کیا',
-                supportUsBtnText: 'ہماری حمایت کریں',
-                aboutUsTitle: 'ہمارے بارے میں',
-                aboutUsContent1: 'نیائے درپن ایک جدید پلیٹ فارم ہے جو وکلاء اور عام لوگوں دونوں کو ہندوستانی قوانین کو آسانی سے تلاش کرنے اور سمجھنے میں مدد کرنے کے لیے ڈیزائن کیا گیا ہے۔ ہمارا مقصد قانونی معلومات کو قابل رسائی بنانا ہے، تاکہ ہر کوئی اپنے حقوق اور ذمہ داریوں کو سمجھ سکے۔',
-                aboutUsContent2: 'ہمارا پلیٹ فارم صارف کی استفسار کی بنیاد پر متعلقہ قانونی دفعات اور تصورات کا فوری اور درست خلاصہ فراہم کرنے کے لیے مصنوعی ذہانت کا فائدہ اٹھاتا ہے۔ نیائے درپن کے ساتھ، قانونی تحقیق پہلے سے کہیں زیادہ آسان اور موثر ہو گئی ہے۔',
-                contactUsTitle: 'رابطہ کریں',
-                contactUsContent: 'اگر آپ کے کوئی سوالات، رائے یا تجاویز ہیں، تو براہ کرم ہم سے رابطہ کرنے میں ہچکچاہٹ محسوس نہ کریں۔ ہم آپ کی مدد کے لیے یہاں موجود ہیں۔',
-                contactEmailLabel: 'ای میل:'
-            }
-        };
-
-        // Function to update text content based on selected language
-        function setLanguage(lang) {
-            const currentTranslations = translations[lang];
-            if (!currentTranslations) return;
-
-            document.getElementById('siteTitle').textContent = currentTranslations.siteTitle;
-            document.getElementById('navHome').textContent = currentTranslations.navHome;
-            document.getElementById('navAbout').textContent = currentTranslations.navAbout;
-            document.getElementById('navContact').textContent = currentTranslations.navContact;
-            document.getElementById('mainHeading').textContent = currentTranslations.mainHeading;
-            document.getElementById('subHeading').textContent = currentTranslations.subHeading;
-            lawQueryInput.placeholder = currentTranslations.lawQueryPlaceholder;
-            document.getElementById('searchBtnText').textContent = currentTranslations.searchBtnText;
-            document.getElementById('loadingText').textContent = currentTranslations.loadingText;
-            document.getElementById('noResultsText').textContent = currentTranslations.noResultsText;
-            document.getElementById('modalTitle').textContent = currentTranslations.modalTitle;
-            document.getElementById('modalMessage').textContent = currentTranslations.modalMessage;
-            document.getElementById('upiScanText').textContent = currentTranslations.upiScanText;
-            document.getElementById('upiIdText').textContent = currentTranslations.upiIdText;
-            document.getElementById('closeModalBtnText').textContent = currentTranslations.closeModalBtnText;
-            document.getElementById('copyrightText').innerHTML = currentTranslations.copyrightText; // Use innerHTML for span
-            document.getElementById('designedByText').textContent = currentTranslations.designedByText;
-            document.getElementById('supportUsBtnText').textContent = currentTranslations.supportUsBtnText;
-
-            // About Us and Contact Us page specific texts
-            document.getElementById('aboutUsTitle').textContent = currentTranslations.aboutUsTitle;
-            document.getElementById('aboutUsContent1').textContent = currentTranslations.aboutUsContent1;
-            document.getElementById('aboutUsContent2').textContent = currentTranslations.aboutUsContent2;
-            document.getElementById('contactUsTitle').textContent = currentTranslations.contactUsTitle;
-            document.getElementById('contactUsContent').textContent = currentTranslations.contactUsContent;
-            document.getElementById('contactEmailLabel').textContent = currentTranslations.contactEmailLabel;
-
-
-            // Update error messages if they are visible
-            if (!errorMessageDiv.classList.contains('hidden')) {
-                errorMessageDiv.textContent = currentTranslations.errorMessage;
-            }
-        }
-
-        // Function to switch between sections
-        function showSection(sectionId) {
-            const sections = document.querySelectorAll('.page-section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
-            // Hide search results and messages when switching pages
-            searchResultsDiv.classList.add('hidden');
-            noResultsMessage.classList.add('hidden');
-            errorMessageDiv.classList.add('hidden');
-            loadingIndicator.classList.add('hidden');
-        }
-
-        // Initialize language on page load
-        setLanguage(languageSelector.value);
-        // Ensure home section is active on load
-        showSection('homeSection');
-
-
-        // Event listener for language selector change
-        languageSelector.addEventListener('change', (event) => {
-            setLanguage(event.target.value);
-            // Also update the HTML lang attribute
-            document.documentElement.lang = event.target.value;
-        });
-
-        // Event listeners for navigation links
-        navHome.addEventListener('click', (e) => {
-            e.preventDefault();
-            showSection('homeSection');
-        });
-        navAbout.addEventListener('click', (e) => {
-            e.preventDefault();
-            showSection('aboutSection');
-        });
-        navContact.addEventListener('click', (e) => {
-            e.preventDefault();
-            showSection('contactSection');
-        });
-
-
-        // Function to show/hide modal
-        function toggleModal(show) {
-            if (show) {
-                donationModal.classList.remove('hidden');
-                // Add animation classes
-                setTimeout(() => {
-                    donationModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
-                    donationModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
-                }, 10); // Small delay for transition to apply
-            } else {
-                // Remove animation classes and hide after transition
-                donationModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
-                donationModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    donationModal.classList.add('hidden');
-                }, 300); // Match transition duration
-            }
-        }
-
-        // Event listener for search button
-        searchButton.addEventListener('click', async () => {
-            const query = lawQueryInput.value.trim();
-            const selectedLanguage = languageSelector.value; // Get current selected language
-
-            if (!query) {
-                errorMessageDiv.textContent = translations[selectedLanguage].errorMessage;
-                errorMessageDiv.classList.remove('hidden');
-                searchResultsDiv.classList.add('hidden');
-                noResultsMessage.classList.add('hidden');
-                return;
-            } else {
-                errorMessageDiv.classList.add('hidden');
-            }
-
-            searchResultsDiv.innerHTML = ''; // Clear previous results
-            searchResultsDiv.classList.add('hidden');
-            noResultsMessage.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden'); // Show loading indicator
-
-            try {
-                // Simulate API call to Gemini-2.0-flash for law search
-                let chatHistory = [];
-                // Prompt the model to act as a legal assistant and provide structured JSON for Indian laws
-                // Request response in the selected language
-                chatHistory.push({
-                    role: "user",
-                    parts: [{ text: `Act as a legal assistant specializing in Indian law. Based on the query "${query}", provide a summary of 2-3 relevant Indian laws or legal concepts. For each, include a concise 'lawTitle' and a 'summary' of its key provisions or relevance. If the query is too general or not directly related to Indian law, provide a general legal concept explanation. Ensure the response is a JSON array of objects. Please provide the response in ${selectedLanguage === 'en' ? 'English' : selectedLanguage === 'hi' ? 'Hindi' : selectedLanguage === 'mr' ? 'Marathi' : selectedLanguage === 'te' ? 'Telugu' : selectedLanguage === 'ta' ? 'Tamil' : selectedLanguage === 'kn' ? 'Kannada' : selectedLanguage === 'bn' ? 'Bengali' : selectedLanguage === 'pa' ? 'Punjabi' : selectedLanguage === 'ur' ? 'Urdu' : 'English'}.` }]
-                });
-
-                const payload = {
-                    contents: chatHistory,
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "lawTitle": { "type": "STRING" },
-                                    "summary": { "type": "STRING" }
-                                },
-                                "propertyOrdering": ["lawTitle", "summary"]
-                            }
-                        }
-                    }
-                };
-
-                // Canvas will provide the API key at runtime if it's empty
-                const apiKey = "AIzaSyDKrjSuL0UqmR1UPfAKHjSBHPgvJOQiM5k";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-
-                    const jsonText = result.candidates[0].content.parts[0].text;
-                    const laws = JSON.parse(jsonText);
-
-                    if (laws && laws.length > 0) {
-                        laws.forEach(law => {
-                            const lawCard = document.createElement('div');
-                            lawCard.className = 'bg-white p-6 rounded-xl shadow-md result-card';
-                            lawCard.innerHTML = `
-                                <h3 class="text-xl font-semibold text-gray-900 mb-2">${law.lawTitle}</h3>
-                                <p class="text-gray-700">${law.summary}</p>
-                            `;
-                            searchResultsDiv.appendChild(lawCard);
-                        });
-                        searchResultsDiv.classList.remove('hidden');
-                        toggleModal(true); // Open donation modal on successful search
-                    } else {
-                        noResultsMessage.classList.remove('hidden');
-                    }
-                } else {
-                    errorMessageDiv.textContent = translations[selectedLanguage].apiError;
-                    errorMessageDiv.classList.remove('hidden');
+            // Array of your websites
+            const websites = [
+                {
+                    name: "Quran Explore",
+                    url: "https://gquranexplore.pages.dev/",
+                    description: "An intuitive platform for exploring the Quran, offering translations, tafsir, and recitation."
+                },
+                {
+                    name: "Developers Compass",
+                    url: "https://gdeveloperscompass.pages.dev/",
+                    description: "A comprehensive guide and resource hub for developers, featuring tutorials, tools, and best practices."
+                },
+                {
+                    name: "Code Converter",
+                    url: "https://gcodeconverter.pages.dev/",
+                    description: "Convert code snippets between different programming languages effortlessly."
+                },
+                {
+                    name: "Utility Hub",
+                    url: "https://gutilityhub.pages.dev/",
+                    description: "A collection of online utilities for everyday tasks, from unit conversions to text manipulation."
+                },
+                {
+                    name: "Hadith Collection",
+                    url: "https://ghadithcollection.pages.dev/",
+                    description: "Explore a curated collection of Hadith, with search and categorization features."
+                },
+                {
+                    name: "AI Resume Builder",
+                    url: "https://gairesumebuilder.pages.dev/",
+                    description: "Generate professional resumes with the power of AI, tailored to your career goals."
+                },
+                {
+                    name: "Nyaya Darpan",
+                    url: "https://gnyayadarpan.pages.dev",
+                    description: "A legal knowledge base providing insights and information on various legal topics."
+                },
+                {
+                    name: "India Geography Website",
+                    url: "https://indiageographywebsite.pages.dev/",
+                    description: "Discover the diverse geography of India with interactive maps and detailed information."
+                },
+                {
+                    name: "Text to Image Generate (Flux 1 Dev)",
+                    url: "https://texttoimagegenerate-flux-1-dev.pages.dev/",
+                    description: "A tool to transform text descriptions into captivating images using advanced AI models."
+                },
+                {
+                    name: "Gufaran Portfolio",
+                    url: "https://gufaranportfolio.pages.dev/",
+                    description: "My personal portfolio showcasing projects, skills, and professional experience."
                 }
+            ];
 
-            } catch (error) {
-                console.error('Error fetching law data:', error);
-                errorMessageDiv.textContent = translations[selectedLanguage].searchError;
-                errorMessageDiv.classList.remove('hidden');
-            } finally {
-                loadingIndicator.classList.add('hidden'); // Hide loading indicator
+            // Function to create a project card
+            function createProjectCard(website) {
+                const card = document.createElement('div');
+                card.classList.add('project-card');
+
+                card.innerHTML = `
+                    <h3>${website.name}</h3>
+                    <p>${website.description}</p>
+                    <a href="${website.url}" target="_blank" class="btn">Visit Website <i class="fas fa-external-link-alt"></i></a>
+                `;
+                return card;
             }
-        });
 
-        // Event listener for closing modal
-        closeModalButton.addEventListener('click', () => {
-            toggleModal(false);
-        });
+            // Populate the dashboard with cards
+            websites.forEach(website => {
+                dashboardGrid.appendChild(createProjectCard(website));
+            });
 
-        // Event listener for footer donation button
-        footerDonationButton.addEventListener('click', () => {
-            toggleModal(true);
-        });
-
-        // Close modal if clicked outside (on overlay)
-        donationModal.addEventListener('click', (event) => {
-            if (event.target === donationModal) {
-                toggleModal(false);
+            // Dark Mode Toggle Logic
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                document.body.classList.add(currentTheme);
+                if (currentTheme === 'dark-mode') {
+                    themeToggle.checked = true;
+                }
             }
+
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light-mode'); // Or remove item for default light
+                }
+            });
         });
     </script>
-    <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-NZZ6M4YB3K');
-</script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4261347534436263"
-     crossorigin="anonymous"></script>
-    <script async custom-element="amp-auto-ads"
-        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
-</script>
 </body>
-
 </html>
